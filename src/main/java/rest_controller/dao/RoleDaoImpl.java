@@ -11,7 +11,7 @@ import javax.persistence.Query;
 import java.util.List;
 
 @Repository
-public class RoleDaoimpl implements RoleDao {
+public class RoleDaoImpl implements RoleDao {
 
     @PersistenceContext
     private EntityManager entityManager;

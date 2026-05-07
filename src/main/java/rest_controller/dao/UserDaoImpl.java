@@ -2,7 +2,6 @@ package rest_controller.dao;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import rest_controller.model.Role;
 import rest_controller.model.User;
 
 import javax.persistence.EntityManager;
@@ -11,14 +10,14 @@ import javax.persistence.Query;
 import java.util.List;
 
 @Repository
-public class UserDaoimpl implements UserDao {
+public class UserDaoImpl implements UserDao {
     @PersistenceContext
     private EntityManager entityManager;
 
     @Override
     @Transactional
     public void saveUser(User user) {
-       entityManager.persist(user);
+        entityManager.persist(user);
     }
 
     @Override
@@ -57,20 +56,10 @@ public class UserDaoimpl implements UserDao {
     public User findByUsername(String username) {
         try {
             return entityManager.createQuery(
-                            "SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username",
-                            User.class).setParameter("username", username).getSingleResult();
+                    "SELECT u FROM User u JOIN FETCH u.roles WHERE u.username = :username",
+                    User.class).setParameter("username", username).getSingleResult();
         } catch (javax.persistence.NoResultException e) {
             return null;
-        }
-    }
-    @Override
-    @Transactional
-    public void addRoleToUser(long userId, long roleId) {
-        User user = entityManager.find(User.class, userId);
-        Role role = entityManager.find(Role.class, roleId);
-        if (user != null && role != null) {
-            user.getRoles().add(role);
-            entityManager.merge(user);
         }
     }
 }

@@ -9,7 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import rest_controller.dao.UserDao;
 import rest_controller.model.User;
-import rest_controller.service.UserServiceimpl;
+import rest_controller.service.UserServiceImpl;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +24,7 @@ class UserServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
     @InjectMocks
-    private UserServiceimpl userServiceimpl;
+    private UserServiceImpl userServiceImpl;
 
     private User testUser;
     private User anotherUser;
@@ -57,7 +57,7 @@ class UserServiceTest {
         String encodedPassword = "encodedPassword123";
         when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
 
-        userServiceimpl.saveUser(testUser);
+        userServiceImpl.saveUser(testUser);
 
         assertThat(testUser.getPassword()).isEqualTo(encodedPassword);
         verify(userDao, times(1)).saveUser(testUser);
@@ -68,7 +68,7 @@ class UserServiceTest {
     void saveUser_ShouldCallDaoSave_WhenUserIsValid() {
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-        userServiceimpl.saveUser(testUser);
+        userServiceImpl.saveUser(testUser);
 
         verify(userDao, times(1)).saveUser(testUser);
     }
@@ -78,7 +78,7 @@ class UserServiceTest {
     void findByUsername_ShouldReturnUser_WhenUserExists() {
         when(userDao.findByUsername("andrey")).thenReturn(testUser);
 
-        User foundUser = userServiceimpl.findByUsername("andrey");
+        User foundUser = userServiceImpl.findByUsername("andrey");
 
         assertThat(foundUser).isNotNull();
         assertThat(foundUser.getUsername()).isEqualTo("andrey");
@@ -90,7 +90,7 @@ class UserServiceTest {
     void findByUsername_ShouldReturnNull_WhenUserDoesNotExist() {
         when(userDao.findByUsername("unknown")).thenReturn(null);
 
-        User foundUser = userServiceimpl.findByUsername("unknown");
+        User foundUser = userServiceImpl.findByUsername("unknown");
 
         assertThat(foundUser).isNull();
         verify(userDao, times(1)).findByUsername("unknown");
@@ -102,7 +102,7 @@ class UserServiceTest {
         List<User> expectedUsers = Arrays.asList(testUser, anotherUser);
         when(userDao.getAllUsers()).thenReturn(expectedUsers);
 
-        List<User> actualUsers = userServiceimpl.getAllUsers();
+        List<User> actualUsers = userServiceImpl.getAllUsers();
 
         assertThat(actualUsers).isNotNull();
         assertThat(actualUsers).hasSize(2);
@@ -114,7 +114,7 @@ class UserServiceTest {
     void getAllUsers_ShouldReturnEmptyList_WhenNoUsersExist() {
         when(userDao.getAllUsers()).thenReturn(Arrays.asList());
 
-        List<User> actualUsers = userServiceimpl.getAllUsers();
+        List<User> actualUsers = userServiceImpl.getAllUsers();
 
         assertThat(actualUsers).isEmpty();
         verify(userDao, times(1)).getAllUsers();
@@ -125,7 +125,7 @@ class UserServiceTest {
     void getUserById_ShouldReturnUser_WhenIdExists() {
         when(userDao.getUserById(1L)).thenReturn(testUser);
 
-        User foundUser = userServiceimpl.getUserById(1L);
+        User foundUser = userServiceImpl.getUserById(1L);
 
         assertThat(foundUser).isNotNull();
         assertThat(foundUser.getId()).isEqualTo(1L);
@@ -137,7 +137,7 @@ class UserServiceTest {
     void getUserById_ShouldReturnNull_WhenIdDoesNotExist() {
         when(userDao.getUserById(999L)).thenReturn(null);
 
-        User foundUser = userServiceimpl.getUserById(999L);
+        User foundUser = userServiceImpl.getUserById(999L);
 
         assertThat(foundUser).isNull();
         verify(userDao, times(1)).getUserById(999L);
@@ -146,14 +146,14 @@ class UserServiceTest {
     //deleteUser
     @Test
     void deleteUser_ShouldCallDaoRemove_WhenIdIsValid() {
-        userServiceimpl.deleteUser(1L);
+        userServiceImpl.deleteUser(1L);
 
         verify(userDao, times(1)).removeUserById(1L);
     }
 
     @Test
     void deleteUser_ShouldNotThrowException_WhenIdDoesNotExist() {
-        userServiceimpl.deleteUser(999L);
+        userServiceImpl.deleteUser(999L);
 
         verify(userDao, times(1)).removeUserById(999L);
     }
@@ -166,7 +166,7 @@ class UserServiceTest {
         testUser.setPassword(rawPassword);
         when(passwordEncoder.encode(rawPassword)).thenReturn(encodedPassword);
 
-        userServiceimpl.updateUser(testUser);
+        userServiceImpl.updateUser(testUser);
 
         assertThat(testUser.getPassword()).isEqualTo(encodedPassword);
         verify(userDao, times(1)).updateUser(testUser);
@@ -178,7 +178,7 @@ class UserServiceTest {
         String alreadyEncodedPassword = "$2a$10$encodedPasswordThatStartsWithDollar2a";
         testUser.setPassword(alreadyEncodedPassword);
 
-        userServiceimpl.updateUser(testUser);
+        userServiceImpl.updateUser(testUser);
 
         assertThat(testUser.getPassword()).isEqualTo(alreadyEncodedPassword);
         verify(passwordEncoder, never()).encode(anyString());
@@ -189,7 +189,7 @@ class UserServiceTest {
     void updateUser_ShouldCallDaoUpdate_WhenUserIsValid() {
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
 
-        userServiceimpl.updateUser(testUser);
+        userServiceImpl.updateUser(testUser);
 
         verify(userDao, times(1)).updateUser(testUser);
     }

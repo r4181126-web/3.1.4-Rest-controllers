@@ -6,10 +6,10 @@ import rest_controller.dao.RoleDao;
 import rest_controller.model.Role;
 
 @Service
-public class RoleServiceimpl implements RoleService {
+public class RoleServiceImpl implements RoleService {
     private final RoleDao roleDao;
 
-    public RoleServiceimpl(RoleDao roleDao) {
+    public RoleServiceImpl(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
 
