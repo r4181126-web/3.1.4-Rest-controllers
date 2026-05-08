@@ -6,7 +6,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import rest_controller.dao.RoleDao;
 import rest_controller.dao.UserDao;
 import rest_controller.model.Role;
 import rest_controller.model.User;
@@ -19,12 +18,12 @@ import java.util.Set;
 public class UserServiceImpl implements UserService {
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
-    private final RoleDao roleDao;
+    private final RoleService roleService;
 
-    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder, RoleDao roleDao) {
+    public UserServiceImpl(UserDao userDao, PasswordEncoder passwordEncoder,RoleService roleService) {
         this.userDao = userDao;
         this.passwordEncoder = passwordEncoder;
-        this.roleDao = roleDao;
+        this.roleService = roleService;
     }
 
     // UserDetailsService
@@ -51,16 +50,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void saveUser(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Set<Role> managedRoles = new HashSet<>();
-        if (user.getRoles() != null) {
-            for (Role role : user.getRoles()) {
-                Role existingRole = roleDao.getRoleById(role.getId());
-                if (existingRole != null) {
-                    managedRoles.add(existingRole);
-                }
-            }
-        }
-        user.setRoles(managedRoles);
+        user.setRoles(roleService.getManagedRoles(user.getRoles()));
         userDao.saveUser(user);
     }
 
@@ -74,16 +64,7 @@ public class UserServiceImpl implements UserService {
         } else {
             user.setPassword(existingUser.getPassword());
         }
-        Set<Role> managedRoles = new HashSet<>();
-        if (user.getRoles() != null) {
-            for (Role role : user.getRoles()) {
-                Role existingRole = roleDao.getRoleById(role.getId());
-                if (existingRole != null) {
-                    managedRoles.add(existingRole);
-                }
-            }
-        }
-        user.setRoles(managedRoles);
+        user.setRoles(roleService.getManagedRoles(user.getRoles()));
         userDao.updateUser(user);
     }
 
